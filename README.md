@@ -18,3 +18,6 @@ We use probability here, though.
 Keystream (correctkey) is from [here](https://ctftime.org/writeup/1024).
 
 This repo is a total mess, I will clean/organize it and improve the code, as soon as I got more time on my hands.
+
+Also I've seen this <http://blogs.gnome.org/muelli/2012/05/breaking-multiple-time-pad/> and maybe it's cool?
+This also looks promising: <http://cryptosmith.org/archives/70>
