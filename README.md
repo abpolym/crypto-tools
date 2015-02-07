@@ -15,4 +15,6 @@ Another good explanation: <http://travisdazell.blogspot.de/2012/11/many-time-pad
 
 We use probability here, though.
 
-Keystream (correctkey) is from [here](https://ctftime.org/writeup/1024)
+Keystream (correctkey) is from [here](https://ctftime.org/writeup/1024).
+
+This repo is a total mess, I will clean/organize it and improve the code, as soon as I got more time on my hands.
