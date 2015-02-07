@@ -14,3 +14,5 @@ Also this explains everything about OTP: <http://crypto.stackexchange.com/a/6095
 Another good explanation: <http://travisdazell.blogspot.de/2012/11/many-time-pad-attack-crib-drag.html>
 
 We use probability here, though.
+
+Keystream (correctkey) is from [here](https://ctftime.org/writeup/1024)
