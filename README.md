@@ -10,4 +10,7 @@ This example is for volga ctf cry200. Rotate the caesar cipher with:
 
 <http://www.xarg.org/tools/caesar-cipher/>
 
-Also this explains everything about OTP: <http://crypto.stackexchange.com/a/6095>
+Also this explains everything about OTP: <http://crypto.stackexchange.com/a/6095>.
+Another good explanation: <http://travisdazell.blogspot.de/2012/11/many-time-pad-attack-crib-drag.html>
+
+We use probability here, though.
