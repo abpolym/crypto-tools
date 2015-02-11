@@ -109,4 +109,4 @@ def decrypt(poem, cip):
 if len(sys.argv) != 3: sys.exit(2)
 
 #print encrypt([0, 5, 13, 16, 19], sys.argv[1], sys.argv[2])
-print decrypt(sys.argv[1], sys.argv[2])
+decrypt(sys.argv[1], sys.argv[2])
