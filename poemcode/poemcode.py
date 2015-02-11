@@ -4,17 +4,25 @@ from os.path import isfile, join
 
 abc='abcdefghijklmnopqrstuvwxyz'
 
-def encrypt(code, poem, msg):
-	twords = []
-	for line in open(poem,'r'):
-		for w in line.split(): twords.append(w.lower())
+def loadlist(infile):
+	tlist = []
+	for line in open(infile,'r'):
+		for w in line.split(): tlist.append(w.lower())
+	return tlist
 
+def encrypt(code, poem, msg):
+	# Load all words of the poem into a temporary list
+	twords = loadlist(poem)
+
+	# Select only those words specified in the code in a new list
 	pwords = ''
 	for c in code: pwords += twords[c].lower()
 	plen = len(pwords)
 
+	# We can only support encoding all alphabetical letters, a key length greater len(abc) is not reasonable here
 	if plen > len(abc): sys.exit(3)
 
+	# Assign an index for each letter in the key based on the alphabet
 	pcode = [None] * plen
 	count = 0
 	while(count<plen):
@@ -24,11 +32,13 @@ def encrypt(code, poem, msg):
 				pcode[pc]=count
 				count+=1
 
+	# Load all words of the message into a string
 	mwords = ''
 	for line in open(msg, 'r'):
 		for w in line.split(): mwords+=w.lower()
 	mlen = len(mwords)
 
+	# Split message into chunks of size plen, append random (here alphabet) characters to fill the last chunk, if necessary
 	cpairs = []
 	curlen = plen
 	while(curlen<mlen):
@@ -39,6 +49,7 @@ def encrypt(code, poem, msg):
 	if rlen < plen: rword += abc[:plen-rlen]
 	cpairs.append(rword)
 
+	# Encrypt the message according to the key
 	cip = ''
 	for i in code: cip+=abc[i]
 	cip+=' '
@@ -49,23 +60,23 @@ def encrypt(code, poem, msg):
 	return cip
 
 def decrypt(poem, cip):
-	msg = ''
-	twords = []
-	for line in open(poem,'r'):
-		for w in line.split(): twords.append(w.lower())
+	# Load all words of the poem into a temporary list
+	twords = loadlist(poem)
 
-	cwords = []
-	for line in open(cip, 'r'):
-		for w in line.split(): cwords.append(w.lower())
+	# Load all cipher chunks of the ciphertext into a list
+	cwords = loadlist(cip)
 
+	# Get the code rom the first chunk and remove it from the ciphertext list
 	code = []
 	for i in cwords.pop(0):
 		code.append(abc.index(i))
 	
+	# Select only those words specified in the code in a new list
 	pwords = ''
 	for c in code: pwords += twords[c].lower()
 	plen = len(pwords)
 
+	# Rearrange the chunks according to the key
 	pcode = [None] * plen
 	count = 0
 	while(count<plen):
@@ -75,10 +86,12 @@ def decrypt(poem, cip):
 				pcode[count]=cwords[pc]
 				count+=1
 
+	# Decrypt the ciphertext
+	msg = ''
 	wlen = len(pcode[0])
 	for c in range(0, wlen):
 		for word in pcode:
-				msg+=word[c]
+			msg+=word[c]
 	return msg
 
 # first argument = poem
