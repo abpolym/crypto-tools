@@ -1,4 +1,5 @@
 import sys
+import itertools
 from os import listdir
 from os.path import isfile, join
 
@@ -62,6 +63,7 @@ def encrypt(code, poem, msg):
 def decrypt(poem, cip):
 	# Load all words of the poem into a temporary list
 	twords = loadlist(poem)
+	print twords
 
 	# Load all cipher chunks of the ciphertext into a list
 	cwords = loadlist(cip)
@@ -71,28 +73,41 @@ def decrypt(poem, cip):
 	for i in cwords.pop(0):
 		code.append(abc.index(i))
 	
-	# Select only those words specified in the code in a new list
-	pwords = ''
-	for c in code: pwords += twords[c].lower()
-	plen = len(pwords)
+	# Select only those words specified in the code in a new multi-arrayed list
+	xwords = [[] for x in range(len(code))]
+	for xcount, c in enumerate(code):
+		tlen = c
+		while(c<len(twords)):
+			xwords[xcount].append(twords[c].lower())
+			c+=26
+	#print xwords
+	# Get all possible combinations
+	for comb in itertools.product(*xwords):
+		#for L in range(0, len(xwords)+1):
+		#	for subset in itertools.combinations(xwords, L):
+		#		print(subset)
+		pwords = ''
+		#for c in code: pwords += comb[c].lower()
+		for c in comb: pwords+=c
+		plen = len(pwords)
 
-	# Rearrange the chunks according to the key
-	pcode = [None] * plen
-	count = 0
-	while(count<plen):
-		for al in abc:
-			for pc, pl in enumerate(pwords):
-				if al!=pl: continue
-				pcode[count]=cwords[pc]
-				count+=1
+		# Rearrange the chunks according to the key
+		pcode = [None] * plen
+		count = 0
+		while(count<plen):
+			for al in abc:
+				for pc, pl in enumerate(pwords):
+					if al!=pl: continue
+					pcode[count]=cwords[pc]
+					count+=1
 
-	# Decrypt the ciphertext
-	msg = ''
-	wlen = len(pcode[0])
-	for c in range(0, wlen):
-		for word in pcode:
-			msg+=word[c]
-	return msg
+		# Decrypt the ciphertext
+		msg = ''
+		wlen = len(pcode[0])
+		for c in range(0, wlen):
+			for word in pcode:
+				msg+=word[c]
+		print msg
 
 # first argument = poem
 # second argument = ciphertxt or msg
