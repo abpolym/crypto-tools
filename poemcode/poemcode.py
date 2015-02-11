@@ -63,7 +63,6 @@ def encrypt(code, poem, msg):
 def decrypt(poem, cip):
 	# Load all words of the poem into a temporary list
 	twords = loadlist(poem)
-	print twords
 
 	# Load all cipher chunks of the ciphertext into a list
 	cwords = loadlist(cip)
@@ -80,14 +79,10 @@ def decrypt(poem, cip):
 		while(c<len(twords)):
 			xwords[xcount].append(twords[c].lower())
 			c+=26
-	#print xwords
+
 	# Get all possible combinations
 	for comb in itertools.product(*xwords):
-		#for L in range(0, len(xwords)+1):
-		#	for subset in itertools.combinations(xwords, L):
-		#		print(subset)
 		pwords = ''
-		#for c in code: pwords += comb[c].lower()
 		for c in comb: pwords+=c
 		plen = len(pwords)
 
