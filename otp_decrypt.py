@@ -55,6 +55,7 @@ for z in range(0,len(ciptxt)):
 		continue
 	mc = most_common(tmp)
 	if (len(tmp)-tmp.count(mc)) >= (refs-zeros)/2:# and len(tmp)-tmp.count(mc)>=tmp.count(mc):
+		if z!=0 and string[z-1]==' ': string = string[:z-1]+","
 		string+=" "
 		continue
 	if lowers==0 and (syms>=tmp.count(mc) or tmp.count(mc)<len(tmp)/2):
