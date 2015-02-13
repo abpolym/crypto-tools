@@ -10,3 +10,10 @@ if(b64rex.match(estr)): print 'base64'
 
 uurex = re.compile('^(begin.*\n)?[\x20-\x60\n]+(end[\n]?)?$')
 if(uurex.match(estr)): print 'uuencode'
+
+xxrex = re.compile('^[A-Za-z0-9+\-]+$')
+if estr.startswith('begin'):
+	tstr = estr.split('\n')
+	tstr = ''.join(tstr[1:len(tstr)-1])
+	if(xxrex.match(tstr)): print 'xxencode'
+if(xxrex.match(estr)): print 'xxencode'
