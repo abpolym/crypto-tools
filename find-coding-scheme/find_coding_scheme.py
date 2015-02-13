@@ -5,6 +5,18 @@ import re
 if len(sys.argv) != 2: sys.exit(2)
 estr=sys.argv[1]
 
+binrex = re.compile('^[01]+$')
+if(binrex.match(estr)): print 'binary'
+
+decrex = re.compile('^[0-9]+$')
+if(decrex.match(estr)): print 'decimal'
+
+octrex = re.compile('^[0-7]+$')
+if(octrex.match(estr)): print 'octal'
+
+hexrex = re.compile('^[A-Fa-f0-9]+$')
+if(hexrex.match(estr)): print 'hexadecimal'
+
 b64rex = re.compile('^[A-Za-z0-9+/]+[=]{0,2}$')
 if(b64rex.match(estr)): print 'base64'
 
