@@ -41,3 +41,21 @@ if estr.startswith('begin'):
 	tstr = ''.join(tstr[1:len(tstr)-1])
 	if(xxrex.match(tstr)): print 'xxencode'
 if(xxrex.match(estr)): print 'xxencode'
+
+md5rex = re.compile('^[0-9a-fA-F]{32}$')
+if md5rex.match(estr): print 'md5'
+
+sha0and1rex = re.compile('^[0-9a-fA-F]{40}$')
+if sha0and1rex.match(estr): print 'sha-0 or sha-1'
+
+sha224 = re.compile('^[0-9a-fA-F]{56}$')
+if sha224.match(estr): print 'sha-224'
+
+sha256 = re.compile('^[0-9a-fA-F]{64}$')
+if sha256.match(estr): print 'sha-256'
+
+sha384 = re.compile('^[0-9a-fA-F]{96}$')
+if sha384.match(estr): print 'sha-384'
+
+sha512 = re.compile('^[0-9a-fA-F]{128}$')
+if sha512.match(estr): print 'sha-512'
