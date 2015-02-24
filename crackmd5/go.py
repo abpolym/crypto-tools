@@ -124,7 +124,6 @@ while not done:
 	reshtml = BeautifulSoup(r.text)
 	status = reshtml.find(id='content1_lblStatus')
 	if str(status) == '<span id="content1_lblStatus">The CAPTCHA code you specifed is wrong. Please try again.</span>': continue
-	for i in reshtml.find(id='content1_lblResults'):
-		print i
+	print 'We did need ['+str(tries)+'] tries to crack this md5... damn :('
+	print reshtml.find(id='content1_lblResults').text
 	done=True
-print 'We did need ['+str(tries)+'] tries to crack this md5... damn :('
