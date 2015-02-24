@@ -18,4 +18,8 @@ $ echo "Yourcustomvaliduseragenthere" > useragent
 
 ## Tools needed
 
-`tesseract` : `brew install tesseract` (OSX) or `sudo apt-get install tesseract-ocr` or just [compile from source](https://code.google.com/p/tesseract-ocr/), if you are superawesome.
+`tesseract` :
+
+* `brew install tesseract` (OSX) or
+* `sudo apt-get install tesseract-ocr` or
+* just [compile from source](https://code.google.com/p/tesseract-ocr/), if you are superawesome.
