@@ -85,7 +85,6 @@ if len(sys.argv)!=2:
 	sys.exit(2)
 
 mshash = sys.argv[1]
-print len(mshash)
 baseurl = 'http://www.hashkiller.co.uk/'
 if len(mshash) == 32: url = baseurl + 'md5-decrypter.aspx'
 elif len(mshash) == 40: url = baseurl + 'sha1-decrypter.aspx'
