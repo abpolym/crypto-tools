@@ -3,7 +3,7 @@ from PIL import Image
 from BeautifulSoup import BeautifulSoup
 import urllib
 
-def generateImage(image):
+def generateImage(image, savefile):
 	img = Image.open(image)
 	w,h = img.size
 	pixels = img.load()
@@ -18,7 +18,7 @@ def generateImage(image):
 			r,g,b = img.getpixel((x,y))
 			if d-v <= r <= d+v or d-v <= g <= d+v or d-v <= b <= d+v: pixels[x,y] = default
 			if r > b: pixels[x,y] = default
-	img.save('/tmp/out.bmp')
+	img.save(savefile)
 
 def wordOCR(bitmapin):
 	FNULL = open(os.devnull, 'w')
@@ -62,39 +62,56 @@ def getuseragent():
 		f.close()
 	return useragent
 
+def getcreds(parsed_html):
+	viewstate = ''
+	eventvalidation = ''
+	for i in  parsed_html.body.findAll('input'):
+		if i['name'] == '__VIEWSTATE': viewstate = i['value']
+		if i['name'] == '__EVENTVALIDATION': eventvalidation = i['value']
+	return (viewstate, eventvalidation)
+
+def savecaptchaimg(fsave):
+	with open(fsave, 'wb') as infile:
+		r = requests.get(imgurl, cookies = rcookies, stream=True)
+		if not r.ok:
+			print 'We could not get the captcha picture... Please panic!'
+			sys.exit(3)
+		for block in r.iter_content(1024):
+			if not block: break
+			infile.write(block)
+
 if len(sys.argv)!=2:
 	print 'Usage: ./this <md5>'
 	sys.exit(2)
-md5hash = sys.argv[1]
 
+md5hash = sys.argv[1]
 baseurl = 'http://www.hashkiller.co.uk/'
 url = baseurl + 'md5-decrypter.aspx'
+useragent = getuseragent()
+captchafile = '/tmp/in.jpg'
+ocrfile = '/tmp/out.bmp'
+
+# First request to get cookies and authentification data as well as the picture link
 r = requests.get(url)
 if r.status_code != 200:
-	print 'I think we are banned...'
+	print 'I think we are banned... Use Tor :D'
 	sys.exit(4)
-rcookies = r.cookies
-useragent = getuseragent()
-parsed_html = BeautifulSoup(r.text)
-viewstate = ''
-eventvalidation = ''
-for i in  parsed_html.body.findAll('input'):
-	if i['name'] == '__VIEWSTATE': viewstate = i['value']
-	if i['name'] == '__EVENTVALIDATION': eventvalidation = i['value']
-imgurl = baseurl + parsed_html.body.find(id='content1_imgCaptcha')['src']
-with open('/tmp/in.jpg', 'wb') as infile:
-	r = requests.get(imgurl, cookies = rcookies, stream=True)
-	if not r.ok:
-		print 'SOMETHING BAD HAPPENED'
-		sys.exit(3)
-	for block in r.iter_content(1024):
-		if not block: break
-		infile.write(block)
 
-generateImage('/tmp/in.jpg')
-captcha = wordOCR('/tmp/out.bmp')
+# Get cookies
+rcookies = r.cookies
+
+# Get authentification credentials
+parsed_html = BeautifulSoup(r.text)
+(viewstate, eventvalidation) = getcreds(parsed_html)
+
+# Get picture link
+imgurl = baseurl + parsed_html.body.find(id='content1_imgCaptcha')['src']
+
+savecaptchaimg(captchafile)
+generateImage(captchafile, ocrfile)
+captcha = wordOCR(ocrfile)
 if not captcha.isupper() or len(captcha)!=6:
-	print 'WRONG RESULT: ' + captcha
+	print 'WRONG CAPTCHA: ' + captcha
 	sys.exit(3)
 r = postmd5(url, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent)
 if r.status_code != 200:
