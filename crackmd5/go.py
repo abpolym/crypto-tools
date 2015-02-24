@@ -91,33 +91,40 @@ useragent = getuseragent()
 captchafile = '/tmp/in.jpg'
 ocrfile = '/tmp/out.bmp'
 
-# First request to get cookies and authentification data as well as the picture link
-r = requests.get(url)
-if r.status_code != 200:
-	print 'I think we are banned... Use Tor :D'
-	sys.exit(4)
+done=False
+tries=0
+while not done:
+	# First request to get cookies and authentification data as well as the picture link
+	r = requests.get(url)
+	if r.status_code != 200:
+		print 'I think we are banned... Use Tor :D'
+		sys.exit(4)
 
-# Get cookies
-rcookies = r.cookies
+	# Get cookies
+	rcookies = r.cookies
 
-# Get authentification credentials
-parsed_html = BeautifulSoup(r.text)
-(viewstate, eventvalidation) = getcreds(parsed_html)
+	tries+=1
+	# Get authentification credentials
+	parsed_html = BeautifulSoup(r.text)
+	(viewstate, eventvalidation) = getcreds(parsed_html)
 
-# Get picture link
-imgurl = baseurl + parsed_html.body.find(id='content1_imgCaptcha')['src']
+	# Get picture link
+	imgurl = baseurl + parsed_html.body.find(id='content1_imgCaptcha')['src']
 
-savecaptchaimg(captchafile)
-generateImage(captchafile, ocrfile)
-captcha = wordOCR(ocrfile)
-if not captcha.isupper() or len(captcha)!=6:
-	print 'WRONG CAPTCHA: ' + captcha
-	sys.exit(3)
-r = postmd5(url, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent)
-if r.status_code != 200:
-	print 'SOMETHING WENT WRONG'
-	sys.exit(3)
-reshtml = BeautifulSoup(r.text)
-print reshtml.find(id='content1_lblStatus')
-for i in reshtml.find(id='content1_lblResults'):
-	print i
+	savecaptchaimg(captchafile)
+	generateImage(captchafile, ocrfile)
+	captcha = wordOCR(ocrfile)
+	if not captcha.isupper() or len(captcha)!=6: continue
+
+	# After determining a possible captcha, we will try to submit it and get the cracked hash
+	r = postmd5(url, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent)
+	if r.status_code != 200:
+		print 'SOMETHING WENT WRONG'
+		sys.exit(3)
+	reshtml = BeautifulSoup(r.text)
+	status = reshtml.find(id='content1_lblStatus')
+	if str(status) == '<span id="content1_lblStatus">The CAPTCHA code you specifed is wrong. Please try again.</span>': continue
+	for i in reshtml.find(id='content1_lblResults'):
+		print i
+	done=True
+print 'We did need ['+str(tries)+'] tries to crack this md5... damn :('
