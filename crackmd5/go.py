@@ -3,8 +3,6 @@ from PIL import Image
 from BeautifulSoup import BeautifulSoup
 import urllib
 
-if len(sys.argv)!=2: sys.exit(2)
-
 def generateImage(image):
 	img = Image.open(image)
 	w,h = img.size
@@ -26,9 +24,6 @@ def wordOCR(bitmapin):
 	FNULL = open(os.devnull, 'w')
 	subprocess.call(["tesseract",bitmapin,"/tmp/out","-l","eng","-psm","8"],stdout=FNULL, stderr=subprocess.STDOUT)
 	word = open('/tmp/out.txt','r').readline().replace('\n','')
-	if not word.isupper() or len(word)!=6:
-		print 'WRONG RESULT: ' + word
-		sys.exit(3)
 	return word
 
 def postmd5(murl, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent):
@@ -60,15 +55,23 @@ def postmd5(murl, viewstate, eventvalidation, md5hash, captcha, rcookies, userag
 def innerHTML(element):
 	return element.decode_contents(formatter="html")
 
+def getuseragent():
+	useragent = ''
+	with open('useragent','r') as f:
+		useragent = f.readline().replace('\n','')
+		f.close()
+	return useragent
+
+if len(sys.argv)!=2:
+	print 'Usage: ./this <md5>'
+	sys.exit(2)
+md5hash = sys.argv[1]
+
 baseurl = 'http://www.hashkiller.co.uk/'
 url = baseurl+'md5-decrypter.aspx'
 r = requests.get(url)
 rcookies = r.cookies
-#aspnetcookie = r.cookies['ASP.NET_SessionId']
-#cfduidcookie = r.cookies['__cfduid']
-useragent = ''
-with open('useragent','r') as f:
-	useragent = f.readline().replace('\n','')
+useragent = getuseragent()
 parsed_html = BeautifulSoup(r.text)
 viewstate = ''
 eventvalidation = ''
@@ -87,7 +90,9 @@ with open('/tmp/in.jpg', 'wb') as infile:
 
 generateImage('/tmp/in.jpg')
 captcha = wordOCR('/tmp/out.bmp')
-md5hash = sys.argv[1]
+if not captcha.isupper() or len(captcha)!=6:
+	print 'WRONG RESULT: ' + captcha
+	sys.exit(3)
 r = postmd5(url, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent)
 if r.status_code != 200:
 	print 'SOMETHING WENT WRONG'
