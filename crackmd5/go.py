@@ -26,7 +26,7 @@ def wordOCR(bitmapin):
 	word = open('/tmp/out.txt','r').readline().replace('\n','')
 	return word
 
-def postmd5(murl, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent):
+def postmd5(murl, viewstate, eventvalidation, mshash, captcha, rcookies, useragent):
 	headers = {
 		u'Cookie':'__cfduid='+rcookies['__cfduid']+'; ASP.NET_SessionId='+rcookies['ASP.NET_SessionId']+'; _gat=1;',
 		u'Origin':'http://www.hashkiller.co.uk',
@@ -46,7 +46,7 @@ def postmd5(murl, viewstate, eventvalidation, md5hash, captcha, rcookies, userag
 	payload += '__EVENTARGUMENT=' + '&'
 	payload += '__VIEWSTATE='+urllib.quote(viewstate, '') + '&'
 	payload += '__EVENTVALIDATION=' + urllib.quote(eventvalidation, '') + '&'
-	payload += 'ctl00%24content1%24txtInput='+urllib.quote(md5hash, '') + '&'
+	payload += 'ctl00%24content1%24txtInput='+urllib.quote(mshash, '') + '&'
 	payload += 'ctl00%24content1%24txtCaptcha='+urllib.quote(captcha, '') + '&'
 	payload += '__ASYNCPOST=true' + '&'
 	payload += 'ctl00%24content1%24btnSubmit=Submit'
@@ -84,9 +84,14 @@ if len(sys.argv)!=2:
 	print 'Usage: ./this <md5>'
 	sys.exit(2)
 
-md5hash = sys.argv[1]
+mshash = sys.argv[1]
+print len(mshash)
 baseurl = 'http://www.hashkiller.co.uk/'
-url = baseurl + 'md5-decrypter.aspx'
+if len(mshash) == 32: url = baseurl + 'md5-decrypter.aspx'
+elif len(mshash) == 40: url = baseurl + 'sha1-decrypter.aspx'
+else:
+	print 'md5 or sha1..'
+	sys.exit(1)
 useragent = getuseragent()
 captchafile = '/tmp/in.jpg'
 ocrfile = '/tmp/out.bmp'
@@ -117,7 +122,7 @@ while not done:
 	if not captcha.isupper() or len(captcha)!=6: continue
 
 	# After determining a possible captcha, we will try to submit it and get the cracked hash
-	r = postmd5(url, viewstate, eventvalidation, md5hash, captcha, rcookies, useragent)
+	r = postmd5(url, viewstate, eventvalidation, mshash, captcha, rcookies, useragent)
 	if r.status_code != 200:
 		print 'SOMETHING WENT WRONG'
 		sys.exit(3)
