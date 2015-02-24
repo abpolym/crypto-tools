@@ -68,8 +68,11 @@ if len(sys.argv)!=2:
 md5hash = sys.argv[1]
 
 baseurl = 'http://www.hashkiller.co.uk/'
-url = baseurl+'md5-decrypter.aspx'
+url = baseurl + 'md5-decrypter.aspx'
 r = requests.get(url)
+if r.status_code != 200:
+	print 'I think we are banned...'
+	sys.exit(4)
 rcookies = r.cookies
 useragent = getuseragent()
 parsed_html = BeautifulSoup(r.text)
