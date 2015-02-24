@@ -1,0 +1,10 @@
+#!/bin/bash
+usage() { echo "Usage: ${FUNCNAME[1]} $1" && return 0; }
+[[ $# -ne 1 ]] && usage '<md5>' && exit 1
+OK=10
+while [[ $OK -ne 0 ]]; do
+	echo "OK IS: $OK"
+	python go.py "$1"
+	sleep 4
+	OK=$?
+done
