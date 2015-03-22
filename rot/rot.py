@@ -47,6 +47,6 @@ rotval = int(sys.argv[1])
 cip = sys.argv[2]
 
 seperate(cip)
-total(cip)
-loweronly(cip)
-upperonly(cip)
+#total(cip)
+#loweronly(cip)
+#upperonly(cip)
