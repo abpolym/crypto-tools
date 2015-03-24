@@ -1,4 +1,4 @@
-import sys
+import argparse, sys
 
 def seperate(cip):
 	msg = ''
@@ -38,15 +38,24 @@ def upperonly(cip):
 	print msg
 # first arg: rot value
 # second arg: ciphertxt
-if len(sys.argv) != 3: sys.exit(2)
+#if len(sys.argv) != 3: sys.exit(2)
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--seperate", help="Rotate Lower and Upper case letters seperately", action="store_true")
+parser.add_argument("-t", "--total", help="Rotate Lower and Upper case letters together", action="store_true")
+parser.add_argument("-l", "--loweronly", help="Rotate Lower case letters only", action="store_true")
+parser.add_argument("-u", "--upperonly", help="Rotate Upper case letters only", action="store_true")
+parser.add_argument("rotvalue", type=int, help="The rotation value")
+parser.add_argument("text", type=str, help="The text to rotate")
+args = parser.parse_args()
 
 tabc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 labc = 'abcdefghijklmnopqrstuvwxyz'
 uabc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-rotval = int(sys.argv[1])
-cip = sys.argv[2]
+rotval = args.rotvalue
+cip = args.text
 
-seperate(cip)
-#total(cip)
-#loweronly(cip)
-#upperonly(cip)
+if args.seperate: seperate(cip)
+elif args.total: total(cip)
+elif args.loweronly: loweronly(cip)
+elif args.upperonly: upperonly(cip)
+else: parser.print_help()
