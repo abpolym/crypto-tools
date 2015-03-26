@@ -219,14 +219,12 @@ abcdict = [(mflet, mllet)]
 # Assign it to the most frequent letter in the english alphabet
 assign(matches, mllet, mflet)
 findAllMatches(matches, mflet, mllet)
-printMatches(matches)
+#printMatches(matches)
 
 for i in range(0, len(matches)):
 	# Find the letter in the matches with the highest count of matches
 	(mflet, mllet) = nextLetter(matches, mflet, mllet, matched, abcdict)
-	print mflet
-	print mllet
 	findAllMatches(matches, mflet, mllet)
-	printMatches(matches)
+	#printMatches(matches)
 print matched
 print abcdict
