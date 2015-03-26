@@ -91,26 +91,64 @@ def printFreq(sdict, fdict):
 		if v < barrier: break
 		if idx < len(fdict): print "["+fdict[idx]+"] " + k + ": " + str(v)
 		else: print "["+" "*len(fdict[0])+"] " + k + ": " + str(v)
+	print
 
-d = collections.defaultdict(int)
+def sortC(col):
+	return sorted(collections.Counter(col).iteritems(), key=operator.itemgetter(1), reverse=True)
 
-f = open(sys.argv[1],'r')
+def sortD(dic):
+	return sorted(dic, key=operator.itemgetter(1), reverse=True)
+
+def getGramDict(ngramdict, ngramletters, index):
+	print 'IND: ' + str(index)
+	found=[]
+	for idx, b in enumerate(ngramdict):
+		if b[0][0]!=ngramletters[index][0]: continue
+		found.append((idx,b))
+	return found
+
+def linefy(rfile):
+	f = open(rfile,'r')
+	lines = []
+	for line in f: lines.append(line.rstrip('\n'))
+	f.close()
+	return lines
+
+def assign(matches, flet, llet):
+	print str(flet) + " is now " + str(llet)
+	if flet not in matches:
+		matches[flet]=[(llet,0)]
+	else:
+		newmatchesdict = []
+		found=False
+		for (k, v) in matches[flet]:
+			if k==llet:
+				found=True
+				v+=1
+			newmatchesdict.append((k,v))
+		if not found: newmatchesdict.append((llet,0))
+		matches[flet]=newmatchesdict
+	return matches
+
+if len(sys.argv)!=3: sys.exit(2)
+
+lines = linefy(sys.argv[1])
+barrier = int(sys.argv[2])
 
 bireps = []
 bigrams = []
-triples = []
+trigrams = []
 quadrigams = []
-barrier = int(sys.argv[2])
-for line in f:
-	line = line.rstrip('\n')
+d = collections.defaultdict(int)
+for line in lines:
 	for word in line.split():
-		for x in [match[0] for match in re.findall(r'((\w)\2{1,})', word)]: bireps.append(x)
+		[bireps.append(match[0]) for match in re.findall(r'((\w)\2{1,})', word)]
 		if len(word)>=2:
 			for i in range(0,len(word)-1):
 				bigrams.append(word[i:i+2])
 		if len(word)>=3:
 			for i in range(0,len(word)-2):
-				triples.append(word[i:i+3])
+				trigrams.append(word[i:i+3])
 		if len(word)>=4:
 			for i in range(0,len(word)-3):
 				quadrigams.append(word[i:i+4])
@@ -118,21 +156,36 @@ for line in f:
 			if char==' ': continue
 			d[char] += 1
 
-letters = sorted(d.items(), key=operator.itemgetter(1), reverse=True)
+letters = sortD(d.items())
+bigrams = sortC(bigrams)
+trigrams = sortC(trigrams)
+quadrigams = sortC(quadrigams)
+bireps = sortC(bireps)
+
 printFreq(letters, fletters)
-print
-
-bigrams = sorted(collections.Counter(bigrams).iteritems(), key=operator.itemgetter(1), reverse=True)
 printFreq(bigrams, fbigrams)
-print
+#printFreq(trigrams, ftrigrams)
+#printFreq(quadrigams, fquadrigams)
+#printFreq(bireps, fbireps)
 
-trigrams = sorted(collections.Counter(triples).iteritems(), key=operator.itemgetter(1), reverse=True)
-printFreq(trigrams, ftrigrams)
-print
 
-bireps = sorted(collections.Counter(bireps).iteritems(), key=operator.itemgetter(1), reverse=True)
-printFreq(bireps, fbireps)
-print
+matches = {}
 
-quadrigams = sorted(collections.Counter(quadrigams).iteritems(), key=operator.itemgetter(1), reverse=True)
-printFreq(quadrigams, fquadrigams)
+
+for x in range(0,len(letters)):
+	#print matches
+	index = x
+	assign(matches, letters[index][0], fletters[index])
+
+	fdict = getGramDict(fbigrams, fletters, index)
+	if len(fdict)==0:
+		#print 'Something really terrible happened'
+		continue
+		sys.exit(4)
+	ldict = getGramDict(bigrams, letters, index)
+	if len(ldict)==0:
+		print 'We have to figure out what to do now...'
+		sys.exit(5)
+	assign(matches, ldict[0][1][0][1], fdict[0][1][1])
+
+print matches
