@@ -231,31 +231,8 @@ findAllMatches(matches, mflet, mllet)
 
 # Find the letter in the matches with the highest count of matches
 # Print results
-#highest = 0
-#for k,v in matches.iteritems():
-#	if k in matched: continue
-#	for (xk, xv) in v:
-#		if xv<highest: continue
-#		highest=xv
-#		mflet=k
-#		mllet=xk
-#		print xk + " " + str(xv)
-#	print k + " " + str(v)
 mflet = nextLetter(matches, mflet, mllet, matched)
-print mflet
 matched.append(mflet)
+print mflet
 print mllet
-
 findAllMatches(matches, mflet, mllet)
-#for k,v in matches.iteritems():
-#	if k in matched: continue
-#	for (xk, xv) in v:
-#		if xv<highest: continue
-#		highest=xv
-#		mflet=k
-#		mllet=xk
-#		print xk + " " + str(xv)
-#	print k + " " + str(v)
-print mflet
-matched.append(mflet)
-print mllet
