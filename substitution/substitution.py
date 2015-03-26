@@ -151,8 +151,32 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 			del ldict[idx]
 			if len(wc)==1: break
 
+def findAllMatches(matches, mflet, mllet):
+	# Begin at the first most frequent letter
+	mflet=fletters[0]
+	mllet=letters[0][0]
+	# Assign it to the most frequent letter in the english alphabet
+	assign(matches, mllet, mflet)
+	# Find matches for 2-grams
+	findMatches(matches, fbigrams, bigrams, mflet, mllet)
+	# Find matches for 3-grams
+	findMatches(matches, ftrigrams, trigrams, mflet, mllet)
+	# Find matches for 4-grams
+	findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
 if len(sys.argv)!=3: sys.exit(2)
 
+def nextLetter(matches, mflet, mllet, matched):
+	highest = 0
+	for k,v in matches.iteritems():
+		if k in matched: continue
+		for (xk, xv) in v:
+			if xv<highest: continue
+			highest=xv
+			mflet=k
+			mllet=xk
+			print xk + " " + str(xv)
+		print k + " " + str(v)
+	return mflet
 lines = linefy(sys.argv[1])
 barrier = int(sys.argv[2])
 
@@ -191,16 +215,47 @@ printFreq(quadrigams, fquadrigams)
 
 
 matches = {}
-index=0
-mflet=fletters[index]
-mllet=letters[index][0]
-assign(matches, mllet, mflet)
-print fbigrams
-print fletters
-findMatches(matches, fbigrams, bigrams, mflet, mllet)
-findMatches(matches, ftrigrams, trigrams, mflet, mllet)
-findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
+# Begin at the first most frequent letter
+mflet=fletters[0]
+mllet=letters[0][0]
+matched = [mflet]
+# Assign it to the most frequent letter in the english alphabet
+#assign(matches, mllet, mflet)
+# Find matches for 2-grams
+#findMatches(matches, fbigrams, bigrams, mflet, mllet)
+# Find matches for 3-grams
+#findMatches(matches, ftrigrams, trigrams, mflet, mllet)
+# Find matches for 4-grams
+#findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
+findAllMatches(matches, mflet, mllet)
 
+# Find the letter in the matches with the highest count of matches
+# Print results
+#highest = 0
+#for k,v in matches.iteritems():
+#	if k in matched: continue
+#	for (xk, xv) in v:
+#		if xv<highest: continue
+#		highest=xv
+#		mflet=k
+#		mllet=xk
+#		print xk + " " + str(xv)
+#	print k + " " + str(v)
+mflet = nextLetter(matches, mflet, mllet, matched)
+print mflet
+matched.append(mflet)
+print mllet
 
-for k,v in matches.iteritems():
-	print k + " " + str(v)
+findAllMatches(matches, mflet, mllet)
+#for k,v in matches.iteritems():
+#	if k in matched: continue
+#	for (xk, xv) in v:
+#		if xv<highest: continue
+#		highest=xv
+#		mflet=k
+#		mllet=xk
+#		print xk + " " + str(xv)
+#	print k + " " + str(v)
+print mflet
+matched.append(mflet)
+print mllet
