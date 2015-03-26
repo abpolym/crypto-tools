@@ -134,11 +134,13 @@ def find(s, ch):
 
 def findMatches(matches, fngrams, lngrams, nflet, nllet):
 	fdict=[]
-	for b in ftrigrams:
+	for b in fngrams:
 		if nflet in b: fdict.append(b)
 	ldict=[]
-	for b in trigrams:
+	for b in lngrams:
 		if nllet in b[0]: ldict.append(b)
+	print fdict
+	print ldict
 
 	for w in fdict:
 		wc = find(w, nflet)
@@ -148,8 +150,6 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 				assign(matches, l[0][i], w[i])
 			del ldict[idx]
 			if len(wc)==1: break
-	print fdict
-	print ldict
 
 if len(sys.argv)!=3: sys.exit(2)
 
@@ -197,36 +197,10 @@ mllet=letters[index][0]
 assign(matches, mllet, mflet)
 print fbigrams
 print fletters
-fdict = []
-for b in fbigrams:
-	if b[0]==mflet: fdict.append(b)
+findMatches(matches, fbigrams, bigrams, mflet, mllet)
+findMatches(matches, ftrigrams, trigrams, mflet, mllet)
+findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
 
-ldict = []
-for b in bigrams:
-	if b[0][0]==mllet: ldict.append(b[0])
-for i in range(0,min(len(fdict),len(ldict))):
-	assign(matches,ldict[i][1],fdict[i][1])
-print
-print
-fdict=[]
-for b in ftrigrams:
-	if mflet in b: fdict.append(b)
-ldict=[]
-for b in trigrams:
-	if mllet in b[0]: ldict.append(b)
-
-for w in fdict:
-	wc = find(w, mflet)
-	for idx, l in enumerate(ldict):
-		if find(l[0], mllet)!=wc: continue
-		for i in set([i for i in range(0,len(w))])-set(wc):
-			assign(matches, l[0][i], w[i])
-		del ldict[idx]
-		if len(wc)==1: break
-print fdict
-print ldict
 
 for k,v in matches.iteritems():
 	print k + " " + str(v)
-#print matches
-print [i for i in range(0,len('abc'))]
