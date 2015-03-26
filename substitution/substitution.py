@@ -100,7 +100,6 @@ def sortD(dic):
 	return sorted(dic, key=operator.itemgetter(1), reverse=True)
 
 def getGramDict(ngramdict, ngramletters, index):
-	print 'IND: ' + str(index)
 	found=[]
 	for idx, b in enumerate(ngramdict):
 		if b[0][0]!=ngramletters[index][0]: continue
@@ -129,6 +128,9 @@ def assign(matches, flet, llet):
 		if not found: newmatchesdict.append((llet,0))
 		matches[flet]=newmatchesdict
 	return matches
+
+def find(s, ch):
+	return [i for i, ltr in enumerate(s) if ltr == ch]
 
 if len(sys.argv)!=3: sys.exit(2)
 
@@ -164,28 +166,44 @@ bireps = sortC(bireps)
 
 printFreq(letters, fletters)
 printFreq(bigrams, fbigrams)
-#printFreq(trigrams, ftrigrams)
-#printFreq(quadrigams, fquadrigams)
+printFreq(trigrams, ftrigrams)
+printFreq(quadrigams, fquadrigams)
 #printFreq(bireps, fbireps)
 
 
 matches = {}
+index=0
+assign(matches, letters[index][0], fletters[index])
+print fbigrams
+print fletters
+fdict = []
+for b in fbigrams:
+	if b[0]==fletters[index]: fdict.append(b)
+ldict = []
+for b in bigrams:
+	if b[0][0]==letters[index][0]: ldict.append(b[0])
+for i in range(0,min(len(fdict),len(ldict))):
+	assign(matches,ldict[i][1],fdict[i][1])
+print
+print
+fdict=[]
+for b in ftrigrams:
+	if fletters[index] in b: fdict.append(b)
+ldict=[]
+for b in trigrams:
+	if letters[index][0] in b[0]: ldict.append(b)
 
+for w in fdict:
+	wc = find(w,fletters[index])
+	for idx, l in enumerate(ldict):
+		if find(l[0],letters[index][0])!=wc: continue
+		for i in set([0,1,2])-set(wc):
+			assign(matches, l[0][i], w[i])
+		del ldict[idx]
+		if len(wc)==1: break
+print fdict
+print ldict
 
-for x in range(0,len(letters)):
-	#print matches
-	index = x
-	assign(matches, letters[index][0], fletters[index])
-
-	fdict = getGramDict(fbigrams, fletters, index)
-	if len(fdict)==0:
-		#print 'Something really terrible happened'
-		continue
-		sys.exit(4)
-	ldict = getGramDict(bigrams, letters, index)
-	if len(ldict)==0:
-		print 'We have to figure out what to do now...'
-		sys.exit(5)
-	assign(matches, ldict[0][1][0][1], fdict[0][1][1])
-
-print matches
+for k,v in matches.iteritems():
+	print k + " " + str(v)
+#print matches
