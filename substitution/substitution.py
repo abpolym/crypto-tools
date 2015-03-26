@@ -114,7 +114,6 @@ def linefy(rfile):
 	return lines
 
 def assign(matches, flet, llet):
-	print str(flet) + " is now " + str(llet)
 	if flet not in matches:
 		matches[flet]=[(llet,0)]
 	else:
@@ -139,8 +138,6 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 	ldict=[]
 	for b in lngrams:
 		if nllet in b[0]: ldict.append(b)
-	print fdict
-	print ldict
 
 	for w in fdict:
 		wc = find(w, nflet)
@@ -169,14 +166,13 @@ def nextLetter(matches, mflet, mllet, matched, abcdict):
 			highest=xv
 			mflet=k
 			mllet=xk
-			print xk + " " + str(xv)
-		print k + " " + str(v)
 	matched.append(mflet)
 	abcdict.append((mflet,mllet))
 	return (mflet, mllet)
 
 def printMatches(matches):
 	for k, v in matches.iteritems(): print k + " " + str(v)
+
 lines = linefy(sys.argv[1])
 barrier = int(sys.argv[2])
 
