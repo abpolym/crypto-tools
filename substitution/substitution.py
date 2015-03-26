@@ -160,7 +160,7 @@ def findAllMatches(matches, mflet, mllet):
 	findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
 if len(sys.argv)!=3: sys.exit(2)
 
-def nextLetter(matches, mflet, mllet, matched):
+def nextLetter(matches, mflet, mllet, matched, abcdict):
 	highest = 0
 	for k,v in matches.iteritems():
 		if k in matched: continue
@@ -172,6 +172,7 @@ def nextLetter(matches, mflet, mllet, matched):
 			print xk + " " + str(xv)
 		print k + " " + str(v)
 	matched.append(mflet)
+	abcdict.append((mflet,mllet))
 	return (mflet, mllet)
 
 def printMatches(matches):
@@ -218,14 +219,18 @@ matches = {}
 mflet=fletters[0]
 mllet=letters[0][0]
 matched = [mflet]
+abcdict = [(mflet, mllet)]
 # Assign it to the most frequent letter in the english alphabet
 assign(matches, mllet, mflet)
 findAllMatches(matches, mflet, mllet)
 printMatches(matches)
 
-# Find the letter in the matches with the highest count of matches
-(mflet, mllet) = nextLetter(matches, mflet, mllet, matched)
-print mflet
-print mllet
-findAllMatches(matches, mflet, mllet)
-printMatches(matches)
+for i in range(0, len(matches)):
+	# Find the letter in the matches with the highest count of matches
+	(mflet, mllet) = nextLetter(matches, mflet, mllet, matched, abcdict)
+	print mflet
+	print mllet
+	findAllMatches(matches, mflet, mllet)
+	printMatches(matches)
+print matched
+print abcdict
