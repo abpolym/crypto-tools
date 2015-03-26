@@ -132,18 +132,18 @@ def assign(matches, flet, llet):
 def find(s, ch):
 	return [i for i, ltr in enumerate(s) if ltr == ch]
 
-def findMatches(matches, fngrams, lngrams):
+def findMatches(matches, fngrams, lngrams, nflet, nllet):
 	fdict=[]
 	for b in ftrigrams:
-		if fletters[index] in b: fdict.append(b)
+		if nflet in b: fdict.append(b)
 	ldict=[]
 	for b in trigrams:
-		if letters[index][0] in b[0]: ldict.append(b)
+		if nllet in b[0]: ldict.append(b)
 
 	for w in fdict:
-		wc = find(w,fletters[index])
+		wc = find(w, nflet)
 		for idx, l in enumerate(ldict):
-			if find(l[0],letters[index][0])!=wc: continue
+			if find(l[0], nllet)!=wc: continue
 			for i in set([i for i in range(0,len(w))])-set(wc):
 				assign(matches, l[0][i], w[i])
 			del ldict[idx]
@@ -200,6 +200,7 @@ print fletters
 fdict = []
 for b in fbigrams:
 	if b[0]==mflet: fdict.append(b)
+
 ldict = []
 for b in bigrams:
 	if b[0][0]==mllet: ldict.append(b[0])
