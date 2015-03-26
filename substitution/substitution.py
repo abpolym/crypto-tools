@@ -132,6 +132,25 @@ def assign(matches, flet, llet):
 def find(s, ch):
 	return [i for i, ltr in enumerate(s) if ltr == ch]
 
+def findMatches(matches, fngrams, lngrams):
+	fdict=[]
+	for b in ftrigrams:
+		if fletters[index] in b: fdict.append(b)
+	ldict=[]
+	for b in trigrams:
+		if letters[index][0] in b[0]: ldict.append(b)
+
+	for w in fdict:
+		wc = find(w,fletters[index])
+		for idx, l in enumerate(ldict):
+			if find(l[0],letters[index][0])!=wc: continue
+			for i in set([i for i in range(0,len(w))])-set(wc):
+				assign(matches, l[0][i], w[i])
+			del ldict[idx]
+			if len(wc)==1: break
+	print fdict
+	print ldict
+
 if len(sys.argv)!=3: sys.exit(2)
 
 lines = linefy(sys.argv[1])
@@ -173,6 +192,8 @@ printFreq(quadrigams, fquadrigams)
 
 matches = {}
 index=0
+mflet=fletters[index]
+mllet=letters[index][0]
 assign(matches, letters[index][0], fletters[index])
 print fbigrams
 print fletters
@@ -197,7 +218,7 @@ for w in fdict:
 	wc = find(w,fletters[index])
 	for idx, l in enumerate(ldict):
 		if find(l[0],letters[index][0])!=wc: continue
-		for i in set([0,1,2])-set(wc):
+		for i in set([i for i in range(0,len(w))])-set(wc):
 			assign(matches, l[0][i], w[i])
 		del ldict[idx]
 		if len(wc)==1: break
@@ -207,3 +228,4 @@ print ldict
 for k,v in matches.iteritems():
 	print k + " " + str(v)
 #print matches
+print [i for i in range(0,len('abc'))]
