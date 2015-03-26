@@ -152,11 +152,6 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 			if len(wc)==1: break
 
 def findAllMatches(matches, mflet, mllet):
-	# Begin at the first most frequent letter
-	mflet=fletters[0]
-	mllet=letters[0][0]
-	# Assign it to the most frequent letter in the english alphabet
-	assign(matches, mllet, mflet)
 	# Find matches for 2-grams
 	findMatches(matches, fbigrams, bigrams, mflet, mllet)
 	# Find matches for 3-grams
@@ -176,7 +171,11 @@ def nextLetter(matches, mflet, mllet, matched):
 			mllet=xk
 			print xk + " " + str(xv)
 		print k + " " + str(v)
-	return mflet
+	matched.append(mflet)
+	return (mflet, mllet)
+
+def printMatches(matches):
+	for k, v in matches.iteritems(): print k + " " + str(v)
 lines = linefy(sys.argv[1])
 barrier = int(sys.argv[2])
 
@@ -220,19 +219,13 @@ mflet=fletters[0]
 mllet=letters[0][0]
 matched = [mflet]
 # Assign it to the most frequent letter in the english alphabet
-#assign(matches, mllet, mflet)
-# Find matches for 2-grams
-#findMatches(matches, fbigrams, bigrams, mflet, mllet)
-# Find matches for 3-grams
-#findMatches(matches, ftrigrams, trigrams, mflet, mllet)
-# Find matches for 4-grams
-#findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
+assign(matches, mllet, mflet)
 findAllMatches(matches, mflet, mllet)
+printMatches(matches)
 
 # Find the letter in the matches with the highest count of matches
-# Print results
-mflet = nextLetter(matches, mflet, mllet, matched)
-matched.append(mflet)
+(mflet, mllet) = nextLetter(matches, mflet, mllet, matched)
 print mflet
 print mllet
 findAllMatches(matches, mflet, mllet)
+printMatches(matches)
