@@ -306,6 +306,6 @@ for (k,v) in abcdict:
 	#print 'XXX ' + k + ' ' + str(v)
 print origabc
 print tranabc
-trans = string.maketrans(origabc, tranabc)
+trans = string.maketrans(tranabc, origabc)
 for l in lines:
 	print l.translate(trans)
