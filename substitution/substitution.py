@@ -1,4 +1,4 @@
-import collections, operator, re, sys
+import collections, operator, re, string, sys
 
 # Frequency of letters etc according to http://www.cryptograms.org/letter-frequencies.php
 # Other stats (TODO) http://scottbryce.com/cryptograms/stats.htm
@@ -175,6 +175,7 @@ def nextLetter(matches, mflet, mllet, matched, abcdict):
 	return (mflet, mllet)
 
 def nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fdict, ldict):
+	oldmflet=mflet
 	highest = 0
 	for k,v in matches.iteritems():
 		if k in matched: continue
@@ -186,8 +187,10 @@ def nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fdict, ldict)
 			mllet=xk
 	tmp=[]
 	for (k,v) in matches[mflet]:
+		if v!=highest: continue
+		print '['+mflet+'] could also be ' + str((k,v))
 		if k in matched or k in vmatched: continue
-		if v==highest: tmp.append((k,distance(fdict, ldict, mflet, k)))
+		tmp.append((k,distance(fdict, ldict, mflet, k)))
 	lowest = 99
 	for (k, v) in tmp:
 		if lowest<=v: continue
@@ -243,7 +246,7 @@ bireps = sortC(bireps)
 #printFreq(bigrams, fbigrams)
 #printFreq(trigrams, ftrigrams)
 #printFreq(quadrigams, fquadrigams)
-printFreq(bireps, fbireps)
+#printFreq(bireps, fbireps)
 
 
 matches = {}
@@ -272,7 +275,37 @@ for i in range(0,len(matches)):
 	(mflet, mllet) = nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fletters, letters)
 	if oldmflet==mflet and oldmllet==mllet: break
 del abcdict[-1]
-for k,v in abcdict:
-	print 'XXX' + k + ' ' + str(v)
-printFreq(letters, fletters)
-printMatches(matches)
+#for k,v in abcdict: print 'XXX ' + k + ' ' + str(v)
+#printFreq(letters, fletters)
+#printMatches(matches)
+
+for i in fletters:
+	if i in matched: continue
+	found=False
+	for idx, (k, v) in enumerate(letters):
+		if idx >= len(fletters): break
+		if k in vmatched: continue
+		matched.append(i)
+		vmatched.append(k)
+		abcdict.append((i,k))
+		found=True
+		break
+	if found: continue
+	for x in 'abcdefghijklmnopqrstuvwxyz':
+		if x in vmatched: continue
+		k=x
+		break
+	matched.append(i)
+	vmatched.append(k)
+	abcdict.append((i,k))
+origabc=''
+tranabc=''
+for (k,v) in abcdict:
+	origabc+=k
+	tranabc+=v
+	#print 'XXX ' + k + ' ' + str(v)
+print origabc
+print tranabc
+trans = string.maketrans(origabc, tranabc)
+for l in lines:
+	print l.translate(trans)
