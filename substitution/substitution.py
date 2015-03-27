@@ -144,14 +144,15 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 		wc = find(w, nflet)
 		for idx, l in enumerate(ldict):
 			if find(l[0], nllet)!=wc: continue
-			print "Found word: " + w + ' as ' + l[0]
+			#print "Found word: " + w + ' as ' + l[0]
 			for i in set([i for i in range(0,len(w))])-set(wc):
 				assign(matches, w[i], l[0][i])#, w[i])
 			del ldict[idx]
 			if len(wc)==1: break
 
 def findAllMatches(matches, mflet, mllet):
-	print 'Finding matches for ['+mflet+'] to ['+mllet+']'
+	#findMatches(matches, fbireps, bireps, mflet, mllet)
+	#print 'Finding matches for ['+mflet+'] to ['+mllet+']'
 	# Find matches for 2-grams
 	findMatches(matches, fbigrams, bigrams, mflet, mllet)
 	# Find matches for 3-grams
@@ -185,13 +186,13 @@ def nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fdict, ldict)
 			mllet=xk
 	tmp=[]
 	for (k,v) in matches[mflet]:
+		if k in matched or k in vmatched: continue
 		if v==highest: tmp.append((k,distance(fdict, ldict, mflet, k)))
 	lowest = 99
 	for (k, v) in tmp:
 		if lowest<=v: continue
 		lowest=v
 		mllet=k
-	print "HIGHESTALL: " + str(tmp)
 	matched.append(mflet)
 	vmatched.append(mllet)
 	abcdict.append((mflet,mllet))
@@ -238,11 +239,11 @@ trigrams = sortC(trigrams)
 quadrigams = sortC(quadrigams)
 bireps = sortC(bireps)
 
-printFreq(letters, fletters)
-printFreq(bigrams, fbigrams)
-printFreq(trigrams, ftrigrams)
-printFreq(quadrigams, fquadrigams)
-#printFreq(bireps, fbireps)
+#printFreq(letters, fletters)
+#printFreq(bigrams, fbigrams)
+#printFreq(trigrams, ftrigrams)
+#printFreq(quadrigams, fquadrigams)
+printFreq(bireps, fbireps)
 
 
 matches = {}
@@ -261,9 +262,6 @@ for i in range(0, len(matches)):
 	(mflet, mllet) = nextLetter(matches, mflet, mllet, matched, abcdict)
 	findAllMatches(matches, mflet, mllet)
 	#printMatches(matches)
-print matched
-print abcdict
-printMatches(matches)
 
 abcdict = []
 matched = []
@@ -273,13 +271,8 @@ for i in range(0,len(matches)):
 	oldmllet=mllet
 	(mflet, mllet) = nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fletters, letters)
 	if oldmflet==mflet and oldmllet==mllet: break
-	print mflet
-	print mllet
-	print matched
-	print abcdict
 del abcdict[-1]
 for k,v in abcdict:
-	print k + ' ' + str(v)
+	print 'XXX' + k + ' ' + str(v)
 printFreq(letters, fletters)
-
-distance(fletters, letters, 'w', 'o')
+printMatches(matches)
