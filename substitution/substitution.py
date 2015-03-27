@@ -114,6 +114,7 @@ def linefy(rfile):
 	return lines
 
 def assign(matches, flet, llet):
+	#print 'F : ' + flet + " L: " + llet + " matches: " + str(matches)
 	if flet not in matches:
 		matches[flet]=[(llet,0)]
 	else:
@@ -143,12 +144,14 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 		wc = find(w, nflet)
 		for idx, l in enumerate(ldict):
 			if find(l[0], nllet)!=wc: continue
+			print "Found word: " + w + ' as ' + l[0]
 			for i in set([i for i in range(0,len(w))])-set(wc):
-				assign(matches, l[0][i], w[i])
+				assign(matches, w[i], l[0][i])#, w[i])
 			del ldict[idx]
 			if len(wc)==1: break
 
 def findAllMatches(matches, mflet, mllet):
+	print 'Finding matches for ['+mflet+'] to ['+mllet+']'
 	# Find matches for 2-grams
 	findMatches(matches, fbigrams, bigrams, mflet, mllet)
 	# Find matches for 3-grams
@@ -228,3 +231,4 @@ for i in range(0, len(matches)):
 	#printMatches(matches)
 print matched
 print abcdict
+printMatches(matches)
