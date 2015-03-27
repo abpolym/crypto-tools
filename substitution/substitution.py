@@ -173,8 +173,40 @@ def nextLetter(matches, mflet, mllet, matched, abcdict):
 	abcdict.append((mflet,mllet))
 	return (mflet, mllet)
 
+def nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fdict, ldict):
+	highest = 0
+	for k,v in matches.iteritems():
+		if k in matched: continue
+		for (xk, xv) in v:
+			if xv<highest: continue
+			if xk in vmatched: continue
+			highest=xv
+			mflet=k
+			mllet=xk
+	tmp=[]
+	for (k,v) in matches[mflet]:
+		if v==highest: tmp.append((k,distance(fdict, ldict, mflet, k)))
+	lowest = 99
+	for (k, v) in tmp:
+		if lowest<=v: continue
+		lowest=v
+		mllet=k
+	print "HIGHESTALL: " + str(tmp)
+	matched.append(mflet)
+	vmatched.append(mllet)
+	abcdict.append((mflet,mllet))
+	return (mflet, mllet)
+
 def printMatches(matches):
 	for k, v in matches.iteritems(): print k + " " + str(v)
+
+def distance(fdict, ldict, nflet, nllet):
+	fidx = fdict.index(nflet)
+	for idx, (k,v) in enumerate(ldict):
+		if k!=nllet: continue
+		lidx=idx
+		break
+	return abs(abs(fidx)-abs(lidx))
 
 lines = linefy(sys.argv[1])
 barrier = int(sys.argv[2])
@@ -232,3 +264,22 @@ for i in range(0, len(matches)):
 print matched
 print abcdict
 printMatches(matches)
+
+abcdict = []
+matched = []
+vmatched = []
+for i in range(0,len(matches)):
+	oldmflet=mflet
+	oldmllet=mllet
+	(mflet, mllet) = nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fletters, letters)
+	if oldmflet==mflet and oldmllet==mllet: break
+	print mflet
+	print mllet
+	print matched
+	print abcdict
+del abcdict[-1]
+for k,v in abcdict:
+	print k + ' ' + str(v)
+printFreq(letters, fletters)
+
+distance(fletters, letters, 'w', 'o')
