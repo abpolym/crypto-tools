@@ -109,7 +109,9 @@ def getGramDict(ngramdict, ngramletters, index):
 def linefy(rfile):
 	f = open(rfile,'r')
 	lines = []
-	for line in f: lines.append(line.rstrip('\n'))
+	for line in f:
+		print re.sub(r'([^\s\w]|_)+','',line.rstrip('\n').lower())
+		lines.append(line.rstrip('\n').lower())
 	f.close()
 	return lines
 
