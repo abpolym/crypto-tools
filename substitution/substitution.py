@@ -110,8 +110,7 @@ def linefy(rfile):
 	f = open(rfile,'r')
 	lines = []
 	for line in f:
-		print re.sub(r'([^\s\w]|_)+','',line.rstrip('\n').lower())
-		lines.append(line.rstrip('\n').lower())
+		lines.append(re.sub(r'([^\s\w]|_)+','',line.rstrip('\n').lower()))
 	f.close()
 	return lines
 
