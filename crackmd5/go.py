@@ -1,4 +1,4 @@
-import json, os, requests, subprocess, sys
+import json, os, random, requests, subprocess, sys, time
 from PIL import Image
 from BeautifulSoup import BeautifulSoup
 import urllib
@@ -21,9 +21,11 @@ def generateImage(image, savefile):
 	img.save(savefile)
 
 def wordOCR(bitmapin):
+	global timestamp
+	outputfile = '/tmp/out_'+timestamp
 	FNULL = open(os.devnull, 'w')
-	subprocess.call(["tesseract",bitmapin,"/tmp/out","-l","eng","-psm","8"],stdout=FNULL, stderr=subprocess.STDOUT)
-	word = open('/tmp/out.txt','r').readline().replace('\n','')
+	subprocess.call(["tesseract",bitmapin,outputfile,"-l","eng","-psm","8"],stdout=FNULL, stderr=subprocess.STDOUT)
+	word = open(outputfile+'.txt','r').readline().replace('\n','')
 	return word
 
 def postmd5(murl, viewstate, eventvalidation, mshash, captcha, rcookies, useragent):
@@ -92,8 +94,9 @@ else:
 	print 'md5 or sha1..'
 	sys.exit(1)
 useragent = getuseragent()
-captchafile = '/tmp/in.jpg'
-ocrfile = '/tmp/out.bmp'
+timestamp = str(random.randrange(0,int(time.time())))
+captchafile = '/tmp/in_'+timestamp+'.jpg'
+ocrfile = '/tmp/out_'+timestamp+'.bmp'
 
 done=False
 tries=0
@@ -128,6 +131,10 @@ while not done:
 	reshtml = BeautifulSoup(r.text)
 	status = reshtml.find(id='content1_lblStatus')
 	if str(status) == '<span id="content1_lblStatus">The CAPTCHA code you specifed is wrong. Please try again.</span>': continue
-	print 'We did need ['+str(tries)+'] tries to crack this md5... damn :('
-	print reshtml.find(id='content1_lblResults').text
+	#print 'We did need ['+str(tries)+'] tries to crack this md5... damn :('
+	result = reshtml.find(id='content1_lblResults').text
+	if result[:32] != mshash:
+		print result
+		sys.exit(5)
+	print mshash + ' ' + result[32:]
 	done=True
