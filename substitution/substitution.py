@@ -1,32 +1,5 @@
 import argparse, collections, operator, re, string, sys
 
-# Frequency of letters etc according to http://www.cryptograms.org/letter-frequencies.php
-# Other stats (TODO) http://scottbryce.com/cryptograms/stats.htm
-
-# Bireps according to http://www.counton.org/explorer/codebreaking/frequency-analysis.php
-fbireps = [
-	"ss",
-	"ee",
-	"tt",
-	"ff",
-	"ll",
-	"mm",
-	"oo"
-]
-
-fbireps = [
-	'ss',
-	'nn',
-	'll',
-	'ee',
-	'mm',
-	'tt',
-	'rr',
-	'dd',
-	'ff',
-	'aa'
-]
-
 def printFreq(sdict, fdict):
 	for idx, (k, v) in enumerate(sdict):
 		if v < barrier: break
@@ -129,7 +102,7 @@ def nextULetter(matches, mflet, mllet, matched, vmatched, abcdict, fdict, ldict)
 	tmp=[]
 	for (k,v) in matches[mflet]:
 		if v!=highest: continue
-		print '['+mflet+'] could also be ' + str((k,v))
+		#print '['+mflet+'] could also be ' + str((k,v))
 		if k in matched or k in vmatched: continue
 		tmp.append((k,distance(fdict, ldict, mflet, k)))
 	lowest = 99
@@ -171,15 +144,28 @@ def loadletters(lfile):
 			abc+=letter
 	return abc
 
+def translate(tfile, origabc, tranabc):
+	translation = ''
+	trans = string.maketrans(tranabc, origabc)
+	with open(tfile, 'r') as f: translation = f.read().lower().translate(trans)
+	return translation
+
 # Parse arguments
 parser = argparse.ArgumentParser()
+parser.add_argument('-t', '--translate', help='Translate given this substitution for abc')
 parser.add_argument('-bf', '--bigram-file', help='Specify a bigram file to be used')
 parser.add_argument('-tf', '--trigram-file', help='Specify a trigram file to be used')
 parser.add_argument('-qf', '--quadgram-file', help='Specify a quadgram file to be used')
+parser.add_argument('-df', '--doubles-file', help='Specify a doubles file to be used')
 parser.add_argument('-lf', '--letters-file', help='Specify a letters file to be used')
 parser.add_argument('-l', '--language', help='Specify which language to be analysed. Default is "en"')
+parser.add_argument('-v', '--verbose', help='Specify the verbosity level as a barrier > 1', type=int)
 parser.add_argument('fcip', type=str, help='The ciphertext file')
 args = parser.parse_args()
+
+if args.translate:
+	print translate(args.fcip, 'abcdefghijklmnopqrstuvwxyz', args.translate)
+	sys.exit(0)
 
 # Determine default and given arguments
 resources = './res'
@@ -187,12 +173,14 @@ if not args.language: args.language='en'
 if not args.bigram_file: args.bigram_file = resources+'/'+args.language+'/'+'bigrams.txt'
 if not args.trigram_file: args.trigram_file = resources+'/'+args.language+'/'+'trigrams.txt'
 if not args.quadgram_file: args.quadgram_file = resources+'/'+args.language+'/'+'quadgrams.txt'
+if not args.doubles_file: args.doubles_file = resources+'/'+args.language+'/'+'doubles.txt'
 if not args.letters_file: args.letters_file = resources+'/'+args.language+'/'+'monograms.txt'
 
 # Load ngrams and ciphertext from resources
 fbigrams = loadgram(args.bigram_file, 2)
 ftrigrams = loadgram(args.trigram_file, 3)
 fquadgrams = loadgram(args.quadgram_file, 4)
+fbireps = loadgram(args.doubles_file, 4)
 fletters = loadletters(args.letters_file)
 lines = linefy(args.fcip)
 
@@ -223,11 +211,13 @@ trigrams = sortC(trigrams)
 quadgrams = sortC(quadgrams)
 bireps = sortC(bireps)
 
-#printFreq(letters, fletters)
-#printFreq(bigrams, fbigrams)
-#printFreq(trigrams, ftrigrams)
-#printFreq(quadgams, fquadgams)
-#printFreq(bireps, fbireps)
+if args.verbose > 0:
+	barrier = args.verbose-1
+	printFreq(letters, fletters)
+	printFreq(bigrams, fbigrams)
+	printFreq(trigrams, ftrigrams)
+	printFreq(quadgrams, fquadgrams)
+	#printFreq(bireps, fbireps)
 
 
 matches = {}
@@ -285,8 +275,5 @@ for (k,v) in abcdict:
 	origabc+=k
 	tranabc+=v
 	#print 'XXX ' + k + ' ' + str(v)
-print origabc
-print tranabc
-trans = string.maketrans(tranabc, origabc)
-for l in lines:
-	print l.translate(trans)
+
+print translate(args.fcip, origabc, tranabc)
