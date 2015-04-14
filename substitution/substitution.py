@@ -3,167 +3,6 @@ import argparse, collections, operator, re, string, sys
 # Frequency of letters etc according to http://www.cryptograms.org/letter-frequencies.php
 # Other stats (TODO) http://scottbryce.com/cryptograms/stats.htm
 
-# Letters
-#fletters = "etaoinshrdlucmfwgypbvkxjqz"
-#fletters = "enritsadhulgomcbfkwzpvjyxq"
-
-fbigrams = [
-	"th",
-	"he",
-	"in",
-	"er",
-	"an",
-	"re",
-	"nd",
-	"on",
-	"en",
-	"at",
-	"ou",
-	"ed",
-	"ha",
-	"to",
-	"or",
-	"it",
-	"is",
-	"hi",
-	"es",
-	"ng"
-]
-
-fbigrams = [
-	"er",
-	"en",
-	"ch",
-	"de",
-	"ei",
-	"te",
-	"in",
-	"nd",
-	"ie",
-	"ge",
-	"st",
-	"ne",
-	"be",
-	"es",
-	"un",
-	"re",
-	"an",
-	"he",
-	"au",
-	"ng"
-]
-
-ftrigrams = [
-	"the",
-	"and",
-	"ing",
-	"her",
-	"hat",
-	"his",
-	"tha",
-	"ere",
-	"for",
-	"ent",
-	"ion",
-	"ter",
-	"was",
-	"you",
-	"ith",
-	"wer",
-	"all",
-	"wit",
-	"thi",
-	"tio"
-]
-
-ftrigrams = [
-	'der',
-	'ein',
-	'sch',
-	'ich',
-	'nde',
-	'die',
-	'che',
-	'den',
-	'ten',
-	'und',
-	'ine',
-	'ter',
-	'gen',
-	'end',
-	'ers',
-	'ste',
-	'cht',
-	'ung',
-	'das',
-	'ere',
-	'ber',
-	'ens',
-	'nge',
-	'rde',
-	'ver',
-	'eit',
-	'hen',
-	'erd',
-	'rei',
-	'ind'
-]
-
-fquadgams = [
-	"that",
-	"ther",
-	"with",
-	"tion",
-	"here",
-	"ould",
-	"ight",
-	"have",
-	"hich",
-	"whic",
-	"this",
-	"thin",
-	"they",
-	"atio",
-	"ever",
-	"from",
-	"ough",
-	"were",
-	"hing",
-	"ment"
-]
-
-fquadgams = [
-	'eine',
-	'nder',
-	'icht',
-	'chen',
-	'sche',
-	'ende',
-	'lich',
-	'sich',
-	'erde',
-	'inde',
-	'nden',
-	'rden',
-	'ndie',
-	'isch',
-	'iche',
-	'auch',
-	'erst',
-	'sein',
-	'nter',
-	'ngen',
-	'nich',
-	'eite',
-	'ande',
-	'tsch',
-	'eder',
-	'dies',
-	'nach',
-	'ders',
-	'esch'
-]
-
 # Bireps according to http://www.counton.org/explorer/codebreaking/frequency-analysis.php
 fbireps = [
 	"ss",
@@ -254,14 +93,14 @@ def findMatches(matches, fngrams, lngrams, nflet, nllet):
 			if len(wc)==1: break
 
 def findAllMatches(matches, mflet, mllet):
-	#findMatches(matches, fbireps, bireps, mflet, mllet)
+	findMatches(matches, fbireps, bireps, mflet, mllet)
 	#print 'Finding matches for ['+mflet+'] to ['+mllet+']'
 	# Find matches for 2-grams
 	findMatches(matches, fbigrams, bigrams, mflet, mllet)
 	# Find matches for 3-grams
 	findMatches(matches, ftrigrams, trigrams, mflet, mllet)
 	# Find matches for 4-grams
-	findMatches(matches, fquadgams, quadgams, mflet, mllet)
+	findMatches(matches, fquadgrams, quadgrams, mflet, mllet)
 
 def nextLetter(matches, mflet, mllet, matched, abcdict):
 	highest = 0
@@ -360,7 +199,7 @@ lines = linefy(args.fcip)
 bireps = []
 bigrams = []
 trigrams = []
-quadgams = []
+quadgrams = []
 d = collections.defaultdict(int)
 for line in lines:
 	for word in line.split():
@@ -373,7 +212,7 @@ for line in lines:
 				trigrams.append(word[i:i+3])
 		if len(word)>=4:
 			for i in range(0,len(word)-3):
-				quadgams.append(word[i:i+4])
+				quadgrams.append(word[i:i+4])
 		for char in word:
 			if char==' ': continue
 			d[char] += 1
@@ -381,7 +220,7 @@ for line in lines:
 letters = sortD(d.items())
 bigrams = sortC(bigrams)
 trigrams = sortC(trigrams)
-quadgams = sortC(quadgams)
+quadgrams = sortC(quadgrams)
 bireps = sortC(bireps)
 
 #printFreq(letters, fletters)
