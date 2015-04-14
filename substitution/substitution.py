@@ -162,9 +162,10 @@ parser.add_argument('-l', '--language', help='Specify which language to be analy
 parser.add_argument('-v', '--verbose', help='Specify the verbosity level as a barrier > 1', type=int)
 parser.add_argument('fcip', type=str, help='The ciphertext file')
 args = parser.parse_args()
+abc = 'abcdefghijklmnopqrstuvwxyz'
 
 if args.translate:
-	print translate(args.fcip, 'abcdefghijklmnopqrstuvwxyz', args.translate)
+	print translate(args.fcip, abc, args.translate)
 	sys.exit(0)
 
 # Determine default and given arguments
@@ -262,7 +263,7 @@ for i in fletters:
 		found=True
 		break
 	if found: continue
-	for x in 'abcdefghijklmnopqrstuvwxyz':
+	for x in abc:
 		if x in vmatched: continue
 		k=x
 		break
