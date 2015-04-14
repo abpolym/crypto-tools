@@ -1,10 +1,11 @@
-import collections, operator, re, string, sys
+import argparse, collections, operator, re, string, sys
 
 # Frequency of letters etc according to http://www.cryptograms.org/letter-frequencies.php
 # Other stats (TODO) http://scottbryce.com/cryptograms/stats.htm
 
 # Letters
-fletters = "etaoinshrdlucmfwgypbvkxjqz"
+#fletters = "etaoinshrdlucmfwgypbvkxjqz"
+#fletters = "enritsadhulgomcbfkwzpvjyxq"
 
 fbigrams = [
 	"th",
@@ -26,6 +27,29 @@ fbigrams = [
 	"is",
 	"hi",
 	"es",
+	"ng"
+]
+
+fbigrams = [
+	"er",
+	"en",
+	"ch",
+	"de",
+	"ei",
+	"te",
+	"in",
+	"nd",
+	"ie",
+	"ge",
+	"st",
+	"ne",
+	"be",
+	"es",
+	"un",
+	"re",
+	"an",
+	"he",
+	"au",
 	"ng"
 ]
 
@@ -52,7 +76,40 @@ ftrigrams = [
 	"tio"
 ]
 
-fquadrigams = [
+ftrigrams = [
+	'der',
+	'ein',
+	'sch',
+	'ich',
+	'nde',
+	'die',
+	'che',
+	'den',
+	'ten',
+	'und',
+	'ine',
+	'ter',
+	'gen',
+	'end',
+	'ers',
+	'ste',
+	'cht',
+	'ung',
+	'das',
+	'ere',
+	'ber',
+	'ens',
+	'nge',
+	'rde',
+	'ver',
+	'eit',
+	'hen',
+	'erd',
+	'rei',
+	'ind'
+]
+
+fquadgams = [
 	"that",
 	"ther",
 	"with",
@@ -75,6 +132,38 @@ fquadrigams = [
 	"ment"
 ]
 
+fquadgams = [
+	'eine',
+	'nder',
+	'icht',
+	'chen',
+	'sche',
+	'ende',
+	'lich',
+	'sich',
+	'erde',
+	'inde',
+	'nden',
+	'rden',
+	'ndie',
+	'isch',
+	'iche',
+	'auch',
+	'erst',
+	'sein',
+	'nter',
+	'ngen',
+	'nich',
+	'eite',
+	'ande',
+	'tsch',
+	'eder',
+	'dies',
+	'nach',
+	'ders',
+	'esch'
+]
+
 # Bireps according to http://www.counton.org/explorer/codebreaking/frequency-analysis.php
 fbireps = [
 	"ss",
@@ -84,6 +173,19 @@ fbireps = [
 	"ll",
 	"mm",
 	"oo"
+]
+
+fbireps = [
+	'ss',
+	'nn',
+	'll',
+	'ee',
+	'mm',
+	'tt',
+	'rr',
+	'dd',
+	'ff',
+	'aa'
 ]
 
 def printFreq(sdict, fdict):
@@ -159,8 +261,7 @@ def findAllMatches(matches, mflet, mllet):
 	# Find matches for 3-grams
 	findMatches(matches, ftrigrams, trigrams, mflet, mllet)
 	# Find matches for 4-grams
-	findMatches(matches, fquadrigams, quadrigams, mflet, mllet)
-if len(sys.argv)!=3: sys.exit(2)
+	findMatches(matches, fquadgams, quadgams, mflet, mllet)
 
 def nextLetter(matches, mflet, mllet, matched, abcdict):
 	highest = 0
@@ -213,13 +314,53 @@ def distance(fdict, ldict, nflet, nllet):
 		break
 	return abs(abs(fidx)-abs(lidx))
 
-lines = linefy(sys.argv[1])
-barrier = int(sys.argv[2])
+def loadgram(gfile,length):
+	ngramdata = []
+	with open(gfile,'r') as f:
+		for g in f:
+			word = g.split(' ')[0].lower()
+			if len(word)!=length: continue
+			ngramdata.append(word)
+	return ngramdata
+
+def loadletters(lfile):
+	abc = ''
+	with open(lfile, 'r') as f:
+		for g in f:
+			letter = g.split(' ')[0].lower()
+			if len(letter)!=1: continue
+			abc+=letter
+	return abc
+
+# Parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-bf', '--bigram-file', help='Specify a bigram file to be used')
+parser.add_argument('-tf', '--trigram-file', help='Specify a trigram file to be used')
+parser.add_argument('-qf', '--quadgram-file', help='Specify a quadgram file to be used')
+parser.add_argument('-lf', '--letters-file', help='Specify a letters file to be used')
+parser.add_argument('-l', '--language', help='Specify which language to be analysed. Default is "en"')
+parser.add_argument('fcip', type=str, help='The ciphertext file')
+args = parser.parse_args()
+
+# Determine default and given arguments
+resources = './res'
+if not args.language: args.language='en'
+if not args.bigram_file: args.bigram_file = resources+'/'+args.language+'/'+'bigrams.txt'
+if not args.trigram_file: args.trigram_file = resources+'/'+args.language+'/'+'trigrams.txt'
+if not args.quadgram_file: args.quadgram_file = resources+'/'+args.language+'/'+'quadgrams.txt'
+if not args.letters_file: args.letters_file = resources+'/'+args.language+'/'+'monograms.txt'
+
+# Load ngrams and ciphertext from resources
+fbigrams = loadgram(args.bigram_file, 2)
+ftrigrams = loadgram(args.trigram_file, 3)
+fquadgrams = loadgram(args.quadgram_file, 4)
+fletters = loadletters(args.letters_file)
+lines = linefy(args.fcip)
 
 bireps = []
 bigrams = []
 trigrams = []
-quadrigams = []
+quadgams = []
 d = collections.defaultdict(int)
 for line in lines:
 	for word in line.split():
@@ -232,7 +373,7 @@ for line in lines:
 				trigrams.append(word[i:i+3])
 		if len(word)>=4:
 			for i in range(0,len(word)-3):
-				quadrigams.append(word[i:i+4])
+				quadgams.append(word[i:i+4])
 		for char in word:
 			if char==' ': continue
 			d[char] += 1
@@ -240,13 +381,13 @@ for line in lines:
 letters = sortD(d.items())
 bigrams = sortC(bigrams)
 trigrams = sortC(trigrams)
-quadrigams = sortC(quadrigams)
+quadgams = sortC(quadgams)
 bireps = sortC(bireps)
 
 #printFreq(letters, fletters)
 #printFreq(bigrams, fbigrams)
 #printFreq(trigrams, ftrigrams)
-#printFreq(quadrigams, fquadrigams)
+#printFreq(quadgams, fquadgams)
 #printFreq(bireps, fbireps)
 
 
