@@ -1,4 +1,6 @@
 # crypto-tools
+
+[![Join the chat at https://gitter.im/YASME-Tim/crypto-tools](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/YASME-Tim/crypto-tools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Some crypto tools that might help
 
 * [Keypad - Australian](aus-dial-pad)
